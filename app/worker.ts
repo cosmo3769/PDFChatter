@@ -1,4 +1,4 @@
-import { ChatWindowMessage } from "@/schema/ChatWindowMessage";
+import { ChatMessageType } from "@/schema/ChatMessageType";
 
 import { Voy as VoyClient } from "voy-search";
 
@@ -71,7 +71,7 @@ const formatDocs = (docs: Document[]) => {
 const createRetrievalChain = (
   llm: BaseLanguageModel,
   retriever: BaseRetriever,
-  chatHistory: ChatWindowMessage[],
+  chatHistory: ChatMessageType[],
 ) => {
   if (chatHistory.length) {
     return RunnableSequence.from([
@@ -110,7 +110,7 @@ const embedPDF = async (pdfBlob: Blob) => {
 };
 
 const _formatChatHistoryAsMessages = async (
-  chatHistory: ChatWindowMessage[],
+  chatHistory: ChatMessageType[],
 ) => {
   return chatHistory.map((chatMessage) => {
     if (chatMessage.role === "human") {
@@ -121,9 +121,9 @@ const _formatChatHistoryAsMessages = async (
   });
 };
 
-const queryVectorStore = async (messages: ChatWindowMessage[]) => {
+const queryVectorStore = async (messages: ChatMessageType[]) => {
   const text = messages[messages.length - 1].content;
-  const chatHistory: ChatWindowMessage[] = messages.slice(0, -1);
+  const chatHistory: ChatMessageType[] = messages.slice(0, -1);
 
   const retrievalChain = createRetrievalChain(
     ollama,
@@ -147,7 +147,7 @@ const queryVectorStore = async (messages: ChatWindowMessage[]) => {
         (input) => {
           const formattedChatHistory = input.chat_history
             .map(
-              (message: ChatWindowMessage) =>
+              (message: ChatMessageType) =>
                 `${message.role.toUpperCase()}: ${message.content}`,
             )
             .join("\n");

@@ -1,11 +1,11 @@
-import { ChatWindow } from "@/components/ChatWindow";
+import { HomePage } from "@/components/HomePage";
 
 export default function Home() {
   return (
-    <ChatWindow
+    <HomePage
       emoji="🏠"
       titleText="Fully Client-Side Chat Over Documents"
       placeholder="Try asking something about the document you just uploaded!"
-    ></ChatWindow>
+    ></HomePage>
   );
 }

@@ -3,12 +3,12 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { ChatWindowMessage } from '@/schema/ChatWindowMessage';
+import { ChatMessageType } from '@/schema/ChatMessageType';
 
 import { useState, type FormEvent } from "react";
 import { Feedback } from 'langsmith';
 
-export function ChatMessageBubble(props: { message: ChatWindowMessage, aiEmoji?: string }) {
+export function ChatPage(props: { message: ChatMessageType, aiEmoji?: string }) {
   const { role, content, runId } = props.message;
 
   const colorClassName =

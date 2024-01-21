@@ -6,16 +6,16 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRef, useState, useEffect } from "react";
 import type { FormEvent } from "react";
 
-import { ChatMessageBubble } from "@/components/ChatMessageBubble";
-import { ChatWindowMessage } from '@/schema/ChatWindowMessage';
+import { ChatPage } from "@/components/ChatPage";
+import { ChatMessageType } from '@/schema/ChatMessageType';
 
-export function ChatWindow(props: {
+export function HomePage(props: {
   placeholder?: string,
   titleText?: string,
   emoji?: string;
 }) {
   const { placeholder, titleText = "An LLM", emoji } = props;
-  const [messages, setMessages] = useState<ChatWindowMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPDF, setSelectedPDF] = useState<File | null>(null);
@@ -23,7 +23,7 @@ export function ChatWindow(props: {
 
   const worker = useRef<Worker | null>(null);
 
-  async function queryStore(messages: ChatWindowMessage[]) {
+  async function queryStore(messages: ChatMessageType[]) {
     if (!worker.current) {
       throw new Error("Worker is not ready.");
     }
@@ -82,7 +82,7 @@ export function ChatWindow(props: {
 
       let chunk = await reader.read();
 
-      const aiResponseMessage: ChatWindowMessage = {
+      const aiResponseMessage: ChatMessageType = {
         content: "",
         role: "ai" as const,
       };
@@ -242,7 +242,7 @@ export function ChatWindow(props: {
           [...messages]
             .reverse()
             .map((m, i) => (
-              <ChatMessageBubble key={i} message={m} aiEmoji={emoji}></ChatMessageBubble>
+              <ChatPage key={i} message={m} aiEmoji={emoji}></ChatPage>
             ))
         ) : (
           ""

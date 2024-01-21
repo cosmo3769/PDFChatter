@@ -1,8 +1,6 @@
 import "./globals.css";
 import { Public_Sans } from "next/font/google";
 
-import { Navbar } from "@/components/Navbar";
-
 const publicSans = Public_Sans({ subsets: ["latin"] });
 
 export default function RootLayout({

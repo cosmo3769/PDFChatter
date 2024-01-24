@@ -1,10 +1,9 @@
 import { ChatMessageType } from "@/schema/ChatMessageType";
 
-import { Voy as VoyClient } from "voy-search";
+import { Chroma } from 'langchain/vectorstores/chroma';
 
 import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
 import { HuggingFaceTransformersEmbeddings } from "langchain/embeddings/hf_transformers";
-import { VoyVectorStore } from "langchain/vectorstores/voy";
 import { ChatOllama } from "langchain/chat_models/ollama";
 import { Document } from "langchain/document";
 import {
@@ -23,8 +22,6 @@ const embeddings = new HuggingFaceTransformersEmbeddings({
   modelName: "Xenova/all-MiniLM-L6-v2",
 });
 
-const voyClient = new VoyClient();
-const vectorstore = new VoyVectorStore(voyClient, embeddings);
 const ollama = new ChatOllama({
   baseUrl: "http://localhost:11435",
   temperature: 0.3,
@@ -106,7 +103,10 @@ const embedPDF = async (pdfBlob: Blob) => {
     data: splitDocs,
   });
 
-  await vectorstore.addDocuments(splitDocs);
+  // Create vector store and index the docs
+  await Chroma.fromDocuments(splitDocs, embeddings, {
+    collectionName: "test-collection",
+  });
 };
 
 const _formatChatHistoryAsMessages = async (
@@ -124,6 +124,10 @@ const _formatChatHistoryAsMessages = async (
 const queryVectorStore = async (messages: ChatMessageType[]) => {
   const text = messages[messages.length - 1].content;
   const chatHistory: ChatMessageType[] = messages.slice(0, -1);
+
+  const vectorstore = await Chroma.fromExistingCollection(embeddings, {
+    collectionName: "test-collection",
+  });
 
   const retrievalChain = createRetrievalChain(
     ollama,

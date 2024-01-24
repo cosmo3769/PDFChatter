@@ -18,7 +18,7 @@ export function HomePage(props: {
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedPDF, setSelectedPDF] = useState<File | null>(null);
+  const [selectedURL, setSelectedURL] = useState("");
   const [readyToChat, setReadyToChat] = useState(false);
 
   const worker = useRef<Worker | null>(null);
@@ -100,7 +100,7 @@ export function HomePage(props: {
       setMessages(initialMessages);
       setIsLoading(false);
       setInput(initialInput);
-      toast(`There was an issue with querying your PDF: ${e.message}`, {
+      toast(`There was an issue with querying your url: ${e.message}`, {
         theme: "dark",
       });
     }
@@ -117,19 +117,18 @@ export function HomePage(props: {
     }
   }, []);
 
-  async function embedPDF (e: FormEvent<HTMLFormElement>) {
-    console.log(e);
-    console.log(selectedPDF);
+  async function embedURL(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // const reader = new FileReader();
-    if (selectedPDF === null) {
-      toast(`You must select a file to embed.`, {
+  
+    if (!selectedURL) {
+      toast(`You must enter a URL to embed.`, {
         theme: "dark",
       });
       return;
     }
+  
     setIsLoading(true);
-    worker.current?.postMessage({ pdf: selectedPDF });
+    worker.current?.postMessage({ url: selectedURL });
     const onMessageReceived = (e: any) => {
       switch (e.data.type) {
         case "log":
@@ -139,7 +138,7 @@ export function HomePage(props: {
           worker.current?.removeEventListener("message", onMessageReceived);
           setIsLoading(false);
           console.log(e.data.error);
-          toast(`There was an issue embedding your PDF: ${e.data.error}`, {
+          toast(`There was an issue embedding the content: ${e.data.error}`, {
             theme: "dark",
           });
           break;
@@ -147,7 +146,7 @@ export function HomePage(props: {
           worker.current?.removeEventListener("message", onMessageReceived);
           setIsLoading(false);
           setReadyToChat(true);
-          toast(`Embedding successful! Now try asking a question about your PDF.`, {
+          toast(`Embedding successful! Now try asking a question about the content.`, {
             theme: "dark",
           });
           break;
@@ -155,15 +154,16 @@ export function HomePage(props: {
     };
     worker.current?.addEventListener("message", onMessageReceived);
   }
+  
 
-  const choosePDFComponent = (
+  const chooseURLComponent = (
     <>
       <div className="p-4 md:p-8 rounded bg-[#25252d] w-full max-h-[85%] overflow-hidden flex flex-col">
         <h1 className="text-3xl md:text-4xl mb-2 ml-auto mr-auto">
-          🏠 Fully Client-Side Chat Over Documents 🏠
+          HuggingFaceDocsBot
         </h1>
         <h3 className="text-xl mb-4 ml-auto mr-auto">
-          <a target="_blank" href="https://github.com/tantaraio/voy">🦀 Voy</a> + <a target="_blank" href="https://ollama.ai/">🦙 Ollama</a> + <a target="_blank" href="https://js.langchain.com">🦜🔗 LangChain.js</a> + <a target="_blank" href="https://huggingface.co/docs/transformers.js/index">🤗 Transformers.js</a>
+          <a target="_blank" href="https://github.com/chroma-core/chroma">Chroma</a> + <a target="_blank" href="https://ollama.ai/">🦙 Ollama</a> + <a target="_blank" href="https://js.langchain.com">🦜🔗 LangChain.js</a> + <a target="_blank" href="https://huggingface.co/docs/transformers.js/index">🤗 Transformers.js</a>
         </h3>
         <ul>
           <li className="text-l">
@@ -219,8 +219,14 @@ export function HomePage(props: {
           </li>
         </ul>
       </div>
-      <form onSubmit={embedPDF} className="mt-4 flex justify-between items-center w-full">
-        <input id="file_input" type="file" accept="pdf" className="text-white" onChange={(e) => e.target.files ? setSelectedPDF(e.target.files[0]) : null}></input>
+      <form onSubmit={embedURL} className="mt-4 flex justify-between items-center w-full">
+        <input
+          type="url"
+          value={selectedURL}
+          placeholder="Enter URL"
+          onChange={(e) => setSelectedURL(e.target.value)}
+          className="text-black p-4 rounded w-2/3"
+        />
         <button type="submit" className="shrink-0 px-8 py-4 bg-sky-600 rounded w-28">
           <div role="status" className={`${isLoading ? "" : "hidden"} flex justify-center`}>
             <svg aria-hidden="true" className="w-6 h-6 text-white animate-spin dark:text-white fill-sky-800" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -277,7 +283,7 @@ export function HomePage(props: {
       <h2 className={`${readyToChat ? "" : "hidden"} text-2xl`}>{emoji} {titleText}</h2>
       {readyToChat
         ? chatInterfaceComponent
-        : choosePDFComponent}
+        : chooseURLComponent}
       <ToastContainer/>
     </div>
   );

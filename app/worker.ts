@@ -1,8 +1,7 @@
 import { ChatMessageType } from "@/schema/ChatMessageType";
 
-import { Chroma } from 'langchain/vectorstores/chroma';
+import { Chroma } from "langchain/vectorstores/chroma";
 
-import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
 import { HuggingFaceTransformersEmbeddings } from "langchain/embeddings/hf_transformers";
 import { ChatOllama } from "langchain/chat_models/ollama";
 import { Document } from "langchain/document";
@@ -17,6 +16,9 @@ import { RunnableSequence } from "langchain/schema/runnable";
 import { StringOutputParser } from "langchain/schema/output_parser";
 import { AIMessage, BaseMessage, HumanMessage } from "langchain/schema";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+
+import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
+import { HtmlToTextTransformer } from "langchain/document_transformers/html_to_text";
 
 const embeddings = new HuggingFaceTransformersEmbeddings({
   modelName: "Xenova/all-MiniLM-L6-v2",
@@ -87,31 +89,27 @@ const createRetrievalChain = (
   }
 };
 
-const embedPDF = async (pdfBlob: Blob) => {
-  const pdfLoader = new WebPDFLoader(pdfBlob);
-  const docs = await pdfLoader.load();
-
-  const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 500,
-    chunkOverlap: 50,
-  });
-
-  const splitDocs = await splitter.splitDocuments(docs);
+const embedUrl = async (url: string) => {
+  // const proxiedUrl = `http://localhost:3000/${url}`
+  const urLoader = new CheerioWebBaseLoader(url);
+  const docs = await urLoader.load();
+  const splitter = RecursiveCharacterTextSplitter.fromLanguage("html");
+  const transformer = new HtmlToTextTransformer();
+  const sequence = splitter.pipe(transformer);
+  const newDocuments = await sequence.invoke(docs);
 
   self.postMessage({
     type: "log",
-    data: splitDocs,
+    data: newDocuments,
   });
 
   // Create vector store and index the docs
-  await Chroma.fromDocuments(splitDocs, embeddings, {
+  await Chroma.fromDocuments(newDocuments, embeddings, {
     collectionName: "test-collection",
   });
 };
 
-const _formatChatHistoryAsMessages = async (
-  chatHistory: ChatMessageType[],
-) => {
+const _formatChatHistoryAsMessages = async (chatHistory: ChatMessageType[]) => {
   return chatHistory.map((chatMessage) => {
     if (chatMessage.role === "human") {
       return new HumanMessage(chatMessage.content);
@@ -193,9 +191,9 @@ self.addEventListener("message", async (event: any) => {
     data: `Received data!`,
   });
 
-  if (event.data.pdf) {
+  if (event.data.url) {
     try {
-      await embedPDF(event.data.pdf);
+      await embedUrl(event.data.url);
     } catch (e: any) {
       self.postMessage({
         type: "error",

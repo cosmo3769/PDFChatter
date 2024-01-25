@@ -3,8 +3,8 @@ import { HomePage } from "@/components/HomePage";
 export default function Home() {
   return (
     <HomePage
-      emoji="🏠"
-      titleText="Fully Client-Side Chat Over Documents"
+      emoji=""
+      titleText="Chat with your Docs"
       placeholder="Try asking something about the document you just uploaded!"
     ></HomePage>
   );

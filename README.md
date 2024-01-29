@@ -72,3 +72,7 @@ Ask your questions and have a conversation.
 - [ ] New chat
 - [ ] Pop up button for 3rd party application
 - [ ] New browser api for non-technical web end-users where a web app can request access to a locally running LLM, e.g. via a popup.
+
+## Reference
+
+* [Jacob Lee's local pdf chatbot](https://github.com/jacoblee93/fully-local-pdf-chatbot/tree/main)

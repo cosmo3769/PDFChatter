@@ -4,7 +4,7 @@ A locally running PDF chatter where users can upload their documentation in pdf 
 
 ## Tech Stack used
 
-- [Chroma](https://github.com/chroma-core/chroma/) as the vector store, fully WASM in the browser.
+- [Chroma](https://github.com/chroma-core/chroma/) as the vector store.
 - [Ollama](https://ollama.ai/) to run an LLM locally and expose it to the web app.
 - [LangChain.js](https://js.langchain.com) to call the models, perform retrieval, and generally orchestrate all the pieces.
 - [Transformers.js](https://huggingface.co/docs/transformers.js/index) to run embeddings in the browser.

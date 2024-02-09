@@ -24,6 +24,7 @@ export function HomePage(props: {
 
   const worker = useRef<Worker | null>(null);
 
+  // Drag and Drop & Click to Upload
   const onDrop = (acceptedFiles: File[]) => {
     setSelectedPDF(
       acceptedFiles[0]
@@ -40,8 +41,56 @@ export function HomePage(props: {
       theme: "dark",
     });
   }
-  
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, onError, onDropRejected, accept: {'application/pdf': []}, });  
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, onError, onDropRejected, accept: { 'application/pdf': [] }, });
+
+  // We use the `useEffect` hook to set up the worker as soon as the `App` component is mounted.
+  useEffect(() => {
+    if (!worker.current) {
+      // Create the worker if it does not yet exist.
+      worker.current = new Worker(new URL('../app/worker.ts', import.meta.url), {
+        type: 'module',
+      });
+      setIsLoading(false);
+    }
+  }, []);
+
+  async function embedPDF(e: FormEvent<HTMLFormElement>) {
+    console.log(e);
+    console.log(selectedPDF);
+    e.preventDefault();
+    if (selectedPDF === null) {
+      toast(`You must select a file to embed.`, {
+        theme: "dark",
+      });
+      return;
+    }
+    setIsLoading(true);
+    worker.current?.postMessage({ pdf: selectedPDF });
+    const onMessageReceived = (e: any) => {
+      switch (e.data.type) {
+        case "log":
+          console.log(e.data);
+          break;
+        case "error":
+          worker.current?.removeEventListener("message", onMessageReceived);
+          setIsLoading(false);
+          console.log(e.data.error);
+          toast(`There was an issue embedding your PDF: ${e.data.error}`, {
+            theme: "dark",
+          });
+          break;
+        case "complete":
+          worker.current?.removeEventListener("message", onMessageReceived);
+          setIsLoading(false);
+          setReadyToChat(true);
+          toast(`Embedding successful! Now try asking a question about your PDF.`, {
+            theme: "dark",
+          });
+          break;
+      }
+    };
+    worker.current?.addEventListener("message", onMessageReceived);
+  }
 
   async function queryStore(messages: ChatMessageType[]) {
     if (!worker.current) {
@@ -124,56 +173,6 @@ export function HomePage(props: {
         theme: "dark",
       });
     }
-  }
-
-  // We use the `useEffect` hook to set up the worker as soon as the `App` component is mounted.
-  useEffect(() => {
-    if (!worker.current) {
-      // Create the worker if it does not yet exist.
-      worker.current = new Worker(new URL('../app/worker.ts', import.meta.url), {
-        type: 'module',
-      });
-      setIsLoading(false);
-    }
-  }, []);
-
-  async function embedPDF(e: FormEvent<HTMLFormElement>) {
-    console.log(e);
-    console.log(selectedPDF);
-    e.preventDefault();
-    // const reader = new FileReader();
-    if (selectedPDF === null) {
-      toast(`You must select a file to embed.`, {
-        theme: "dark",
-      });
-      return;
-    }
-    setIsLoading(true);
-    worker.current?.postMessage({ pdf: selectedPDF });
-    const onMessageReceived = (e: any) => {
-      switch (e.data.type) {
-        case "log":
-          console.log(e.data);
-          break;
-        case "error":
-          worker.current?.removeEventListener("message", onMessageReceived);
-          setIsLoading(false);
-          console.log(e.data.error);
-          toast(`There was an issue embedding your PDF: ${e.data.error}`, {
-            theme: "dark",
-          });
-          break;
-        case "complete":
-          worker.current?.removeEventListener("message", onMessageReceived);
-          setIsLoading(false);
-          setReadyToChat(true);
-          toast(`Embedding successful! Now try asking a question about your PDF.`, {
-            theme: "dark",
-          });
-          break;
-      }
-    };
-    worker.current?.addEventListener("message", onMessageReceived);
   }
 
   const choosePDFComponent = (

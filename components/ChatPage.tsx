@@ -75,6 +75,7 @@ export function ChatPage(props: { message: ChatMessageType, aiEmoji?: string }) 
 
     setIsLoading(false);
   }
+
   return (
     <div
       className={`${alignmentClassName} ${colorClassName} rounded px-4 py-2 max-w-[80%] mb-8 flex flex-col`}

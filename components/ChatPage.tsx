@@ -22,18 +22,6 @@ export function ChatPage(props: { message: ChatMessageType, aiEmoji?: string }) 
   const [comment, setComment] = useState("");
   const [showCommentForm, setShowCommentForm] = useState(false);
 
-  async function handleScoreButtonPress(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, score: number) {
-    e.preventDefault();
-    setComment("");
-    await sendFeedback(score);
-  }
-
-  async function handleCommentSubmission(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const score = typeof feedback?.score === "number" ? feedback.score : 0;
-    await sendFeedback(score);
-  }
-
   async function sendFeedback(score: number) {
     if (isLoading) {
       return;
@@ -74,6 +62,18 @@ export function ChatPage(props: { message: ChatMessageType, aiEmoji?: string }) 
     }
 
     setIsLoading(false);
+  }
+
+  async function handleScoreButtonPress(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, score: number) {
+    e.preventDefault();
+    setComment("");
+    await sendFeedback(score);
+  }
+
+  async function handleCommentSubmission(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const score = typeof feedback?.score === "number" ? feedback.score : 0;
+    await sendFeedback(score);
   }
 
   return (

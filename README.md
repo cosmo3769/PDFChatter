@@ -41,7 +41,7 @@ Download and set up [Docker](https://www.docker.com/products/docker-desktop/) to
 
 ### Setup Chroma
 
-- Clone the repo [Chroma]() by running `git clone https://github.com/chroma-core/chroma`.
+- Clone the repo [Chroma](https://github.com/chroma-core/chroma/) by running `git clone https://github.com/chroma-core/chroma`.
 - Move to the directory by running `cd chroma`
 - Before running the server, go to `docker-compose.yml` file and add this line under `environment` to resolve CORS issue during development in local `- CHROMA_SERVER_CORS_ALLOW_ORIGINS=["https://localhost:3000"]`
 - Run docker command: `docker-compose up -d --build`

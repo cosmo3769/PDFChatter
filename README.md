@@ -27,12 +27,15 @@ Users will need to download and set up [Ollama](https://ollama.ai), then run the
 allow the site access to a locally running Mistral instance:
 
 ```bash
-$ OLLAMA_ORIGINS=https://pdf-chatter-beta.vercel.app/ OLLAMA_HOST=127.0.0.1:11435 ollama serve
+$ OLLAMA_ORIGINS=http://localhost:3000 OLLAMA_HOST=127.0.0.1:11435 ollama serve
 ```
+
+**NOTE:** After deploying to vercel, you need to make one change: replace `OLLAMA_ORIGINS=http://localhost:3000` with `OLLAMA_ORIGINS=https://pdf-chatter-beta.vercel.app/`.
+
 Then, in another terminal window:
 
 ```bash
-$ OLLAMA_HOST=127.0.0.1:11435 ollama pull mistral
+$ OLLAMA_HOST=127.0.0.1:11435 ollama pull gemma:2b
 ```
 
 ### Install Docker

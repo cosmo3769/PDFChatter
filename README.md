@@ -24,7 +24,7 @@ A locally running PDF chatter where users can upload their documentation in pdf 
 ### Install Ollama
 
 Users will need to download and set up [Ollama](https://ollama.ai), then run the following commands to
-allow the site access to a locally running Mistral instance:
+allow the site access to a locally running Gemma instance:
 
 ```bash
 $ OLLAMA_ORIGINS=http://localhost:3000 OLLAMA_HOST=127.0.0.1:11435 ollama serve

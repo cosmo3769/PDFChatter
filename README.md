@@ -27,8 +27,11 @@ Users will need to download and set up [Ollama](https://ollama.ai), then run the
 allow the site access to a locally running Mistral instance:
 
 ```bash
-$ OLLAMA_ORIGINS=https://pdf-chatter-beta.vercel.app/ OLLAMA_HOST=127.0.0.1:11435 ollama serve
+$ OLLAMA_ORIGINS=http://localhost:3000 OLLAMA_HOST=127.0.0.1:11435 ollama serve
 ```
+
+**NOTE:** After deploying to vercel, you need to make one change: replace `OLLAMA_ORIGINS=http://localhost:3000` with `OLLAMA_ORIGINS=https://pdf-chatter-beta.vercel.app/`.
+
 Then, in another terminal window:
 
 ```bash
@@ -43,14 +46,14 @@ Download and set up [Docker](https://www.docker.com/products/docker-desktop/) to
 
 - Clone the repo [Chroma](https://github.com/chroma-core/chroma/) by running `git clone https://github.com/chroma-core/chroma`.
 - Move to the directory by running `cd chroma`
-- Before running the server, go to `docker-compose.yml` file and add this line under `environment` to resolve CORS issue during development in local `- CHROMA_SERVER_CORS_ALLOW_ORIGINS=["https://localhost:3000"]`
+- Before running the server, go to `docker-compose.yml` file and add this line under `environment` to resolve CORS issue during development in local `- CHROMA_SERVER_CORS_ALLOW_ORIGINS=["http://localhost:3000"]`
 - Run docker command: `docker-compose up -d --build`
 
 ### Live version
 
 Go to [PDFChatter](https://pdf-chatter-beta.vercel.app/) deployed at vercel.
 
-**Note - After deploying to vercel, you need to make one change to chroma to resolve CORS issue. Replace `- CHROMA_SERVER_CORS_ALLOW_ORIGINS=["https://localhost:3000"]` with `- CHROMA_SERVER_CORS_ALLOW_ORIGINS=["https://data-bot-sooty.vercel.app"]`. Don't forget to rerun the server by running `docker-compose up -d --build`**
+**Note - After deploying to vercel, you need to make one change to chroma to resolve CORS issue. Replace `- CHROMA_SERVER_CORS_ALLOW_ORIGINS=["http://localhost:3000"]` with `- CHROMA_SERVER_CORS_ALLOW_ORIGINS=["https://pdf-chatter-beta.vercel.app/"]`. Don't forget to rerun the server by running `docker-compose up -d --build`**
 
 ### Upload PDF and Embed
 

@@ -30,7 +30,7 @@ allow the site access to a locally running Mistral instance:
 $ OLLAMA_ORIGINS=http://localhost:3000 OLLAMA_HOST=127.0.0.1:11435 ollama serve
 ```
 
-**NOTE:** After deploying to vercel, you need to make one change: replace `OLLAMA_ORIGINS=http://localhost:3000` with `OLLAMA_ORIGINS=https://pdf-chatter-beta.vercel.app/`.
+**NOTE:** After deploying to vercel, you need to make one change: replace `OLLAMA_ORIGINS=http://localhost:3000` with `OLLAMA_ORIGINS=https://pdf-chatter-beta.vercel.app`.
 
 Then, in another terminal window:
 
